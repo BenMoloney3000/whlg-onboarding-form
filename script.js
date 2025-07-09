@@ -46,6 +46,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       const proxies = this.anyChecked("proxy");
       const gross = parseFloat($("gross").value || 0);
       const grossOk = gross > 0 && gross <= 36000;
+      const possible = [];
+      if (postcodeOk) possible.push("Pathway 1 – IMD 1-2 postcode");
+      if (benefitOk) possible.push("Pathway 2 – Means-tested benefits");
+      const flexOk = proxies.length >= 2 && !((proxies.includes('5') || proxies.includes('6')) && proxies.includes('7'));
+      if (flexOk) possible.push("Pathway 2 – ECO Flex Route 2");
+      if (grossOk) possible.push("Pathway 3 – Income < £36,000");
+      const net = parseFloat($("net").value || 0);
+      const housing = parseFloat($("housing").value || 0);
+      const adults = parseInt($("adults").value);
+      const children = parseInt($("children").value);
+      const scale = 1 + 0.5 * (adults - 1) + 0.3 * children;
+      const ahc = (net - housing) / scale;
+      const ahcOk = ahc > 0 && ahc < 14625;
+      if (ahcOk) possible.push("Pathway 3 – AHC Equalisation");
       let pathway = "", finElig = false;
       if (postcodeOk) {
         pathway = "1 IMD"; finElig = true;
@@ -53,20 +67,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         pathway = "2 benefits"; finElig = true;
       } else {
         this.showAdvanced();
-        if (proxies.length >= 2 && !((proxies.includes('5') || proxies.includes('6')) && proxies.includes('7'))) {
+        if (flexOk) {
           pathway = "2 ECO Flex"; finElig = true;
         } else if (grossOk) {
           pathway = "3 income"; finElig = true;
-        } else {
-          const net = parseFloat($("net").value || 0);
-          const housing = parseFloat($("housing").value || 0);
-          const adults = parseInt($("adults").value);
-          const children = parseInt($("children").value);
-          const scale = 1 + 0.5 * (adults - 1) + 0.3 * children;
-          const ahc = (net - housing) / scale;
-          if (ahc > 0 && ahc < 14625) {
-            pathway = "3 AHC"; finElig = true;
-          }
+        } else if (ahcOk) {
+          pathway = "3 AHC"; finElig = true;
         }
       }
       let propElig = ["D","E","F","G"].includes($("epc").value) && parseInt($("sap").value || 0) < 70;
@@ -92,7 +98,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         this.hide($("docsSection"));
         this.hide($("measuresSection"));
       }
-      $("result").value = `Outcome: ${outcome}\nFinancial pathway: ${pathway}\nTenure: ${$("tenure").value}\nDocs by: ${$("docsBy").value || 'N/A'}`;
+      $("result").value = `Outcome: ${outcome}\nFinancial pathway: ${pathway}\nPossible pathways: ${possible.join(', ')}\nTenure: ${$("tenure").value}\nDocs by: ${$("docsBy").value || 'N/A'}`;
       const dump = {
         consent: [$("consentGen").checked, $("consentHealth").checked, $("consentShare").checked],
         call: $("callTime").value,
