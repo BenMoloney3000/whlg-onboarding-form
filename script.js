@@ -121,8 +121,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const ok = this.postcodeMatch(value);
         $("imdFlag").innerHTML = 'IMD eligibility: <strong>' + (ok ? 'Yes' : 'No') + '</strong>';
         const dec = this.getDeciles(value);
-        $("imdDecile").textContent = dec ? 'IMD Decile: ' + dec.imdDecile : '';
-        $("imdIncomeDecile").textContent = dec ? 'IMD Income Decile: ' + dec.incomeDecile : '';
+        $("imdDecile").textContent = dec
+          ? 'Overall IMD decile: ' + dec.imdDecile
+          : '';
+        $("imdIncomeDecile").textContent = dec
+          ? 'Income IMD decile: ' + dec.incomeDecile
+          : '';
       });
       $("upgraded").addEventListener('change', () => this.checkBorderline());
       $("sap").addEventListener('input', () => this.checkBorderline());
