@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WHLG Triage Calculator v2.4</title>
+<style>
+ body{font-family:Arial,Helvetica,sans-serif;margin:2rem;line-height:1.45;max-width:960px}
+ h1{font-size:1.6rem;margin-bottom:1rem}
+ h2{font-size:1.2rem;margin:1.5rem 0 .6rem}
+ fieldset{border:1px solid #ccc;padding:1rem;margin-bottom:1rem}
+ label{display:block;margin:.3rem 0}
+ select,input[type="text"],input[type="number"],input[type="date"],input[type="datetime-local"]{width:100%;padding:.3rem}
+ summary{cursor:pointer;font-weight:bold}
+ .hidden{display:none}
+ textarea{width:100%;height:100px}
+ details{margin-bottom:1rem}
+ button{padding:.6rem 1rem;font-size:1rem}
+</style>
+</head>
+<body>
+<h1>WHLG Triage Calculator (v2.4)</h1>
+<!-- Stage 1 -->
+<details open>
+ <summary>Stage 1 – Background, GDPR & call info</summary>
+ <fieldset>
+  <label><input type="checkbox" id="consentGen"/> Caller has read PEC privacy notice</label>
+  <label><input type="checkbox" id="consentHealth"/> Caller consents to discuss health data</label>
+  <label><input type="checkbox" id="consentShare"/> Caller consents for PEC to record & share health data with PCC</label>
+  <label>Call date & time <input type="datetime-local" id="callTime"/></label>
+  <label>Call attempt #
+   <select id="attempt"><option>1</option><option>2</option><option>3</option></select>
+  </label>
+ </fieldset>
+</details>
+<!-- Stage 2 -->
+<details>
+ <summary>Stage 2 – Eligibility & priority checks</summary>
+ <!-- Tenure -->
+ <fieldset>
+  <legend>Tenure</legend>
+  <label>Tenure
+    <select id="tenure">
+      <option value="">Select…</option>
+      <option value="owner">Owner‑occupier</option>
+      <option value="tenant">Tenant (PRS)</option>
+      <option value="landlord">Landlord applicant</option>
+    </select>
+  </label>
+ </fieldset>
+ <!-- EPC / SAP -->
+ <fieldset>
+  <legend>Property EPC / SAP</legend>
+  <label>Postcode <input type="text" id="postcode" placeholder="e.g. PL5 2LD" /></label>
+  <span id="imdFlag">IMD eligibility: <strong>Unknown</strong></span>
+  <label>EPC rating
+   <select id="epc">
+    <option value="">Select…</option><option>D</option><option>E</option><option>F</option><option>G</option><option value="Cplus">C‑or‑better</option>
+   </select></label>
+  <label>SAP score <input type="number" id="sap" min="1" max="100" /></label>
+  <label>Cavity wall construction? <input type="checkbox" id="cavity" /></label>
+  <label>Any upgrades since EPC? <input type="checkbox" id="upgraded" /></label>
+  <div id="deReviewWrap" class="hidden">
+   <label>Does this need Dartmoor Energy review?
+    <select id="deReview">
+      <option value="">Select…</option>
+      <option value="noNotEligible">No – NOT eligible</option>
+      <option value="noEligible">No – eligible</option>
+      <option value="yes">Yes – refer to DE</option>
+    </select>
+   </label>
+  </div>
+ </fieldset>
+ <!-- Vulnerabilities -->
+ <details>
+  <summary>Vulnerabilities (tick all that apply)</summary>
+  <fieldset>
+   <label><input type="checkbox" class="vuln" value="65+"/> 65 or older</label>
+   <label><input type="checkbox" class="vuln" value="resp"/> Respiratory / CVD</label>
+   <label><input type="checkbox" class="vuln" value="immune"/> Immunosuppressed</label>
+   <label><input type="checkbox" class="vuln" value="mobility"/> Limited mobility / disability</label>
+   <label><input type="checkbox" class="vuln" value="mental"/> Mental‑health condition</label>
+   <label><input type="checkbox" class="vuln" value="preg"/> Pregnant</label>
+   <label><input type="checkbox" class="vuln" value="child"/> Child under 5</label>
+   <label><input type="checkbox" class="vuln" value="other"/> Other vulnerability to cold</label>
+  </fieldset>
+ </details>
+ <!-- Financial eligibility -->
+ <fieldset>
+  <legend>Financial eligibility – cascaded routes</legend>
+  <!-- Pathway 1 IMD handled automatically -->
+  <!-- Pathway 2 Means‑tested benefits -->
+  <details>
+   <summary>Pathway 2 – Means‑tested benefits</summary>
+   <label><input type="checkbox" class="benefit" value="HB"/> Housing Benefit</label>
+   <label><input type="checkbox" class="benefit" value="JSA"/> Income‑based JSA</label>
+   <label><input type="checkbox" class="benefit" value="ESA"/> Income‑related ESA</label>
+   <label><input type="checkbox" class="benefit" value="IS"/> Income Support</label>
+   <label><input type="checkbox" class="benefit" value="PC"/> Pension Credit (G/S)</label>
+   <label><input type="checkbox" class="benefit" value="UC"/> Universal Credit</label>
+   <label><input type="checkbox" class="benefit" value="TC"/> Working / Child Tax Credit</label>
+  </details>
+  <!-- Pathway 3 Gross income -->
+  <details>
+   <summary>Pathway 3 – Gross income ≤ £36 000</summary>
+   <label>Total gross household income (£) <input type="number" id="gross"/></label>
+  </details>
+  <!-- Advanced routes hidden initially -->
+  <div id="advancedFin" class="hidden">
+   <details>
+    <summary>Pathway 4 – After‑housing‑cost equivalised</summary>
+    <label>Net income (£) <input type="number" id="net"/></label>
+    <label>Annual housing costs (£) <input type="number" id="housing"/></label>
+    <label>Adults in household <input type="number" id="adults" min="1" value="1"/></label>
+    <label>Children in household <input type="number" id="children" min="0" value="0"/></label>
+   </details>
+   <details>
+    <summary>Pathway 5 – ECO‑Flex two‑proxy</summary>
+    <label><input type="checkbox" class="proxy" value="1"/> LSOA 1‑3</label>
+    <label><input type="checkbox" class="proxy" value="2"/> Council‑Tax Reduction</label>
+    <label><input type="checkbox" class="proxy" value="3"/> NICE NG6 vulnerability</label>
+    <label><input type="checkbox" class="proxy" value="4"/> Free School Meals</label>
+    <label><input type="checkbox" class="proxy" value="5"/> LA low‑income scheme</label>
+    <label><input type="checkbox" class="proxy" value="6"/> CA / supplier referral</label>
+    <label><input type="checkbox" class="proxy" value="7"/> Supplier debt data</label>
+   </details>
+  </div>
+ </fieldset>
+</details>
+<!-- Stage 3 docs -->
+<details id="docsSection" class="hidden">
+ <summary>Stage 3 – Documents the customer will send</summary>
+ <fieldset>
+  <legend>Proof of address document customer will send</legend>
+  <label><input type="checkbox" class="doc" value="utility"/> Recent utility bill</label>
+  <label><input type="checkbox" class="doc" value="council"/> Council‑tax bill</label>
+  <label><input type="checkbox" class="doc" value="tenancy"/> Tenancy agreement</label>
+  <label><input type="checkbox" class="doc" value="mortgage"/> Mortgage / title statement</label>
+  <label><input type="checkbox" class="doc" value="otherAddr"/> Other proof of address</label>
+ </fieldset>
+ <fieldset>
+  <legend>Other evidence customer will send</legend>
+  <label><input type="checkbox" class="doc" value="photoID"/> Photo ID</label>
+  <label><input type="checkbox" class="doc" value="ownership"/> Ownership / tenancy docs</label>
+  <label><input type="checkbox" class="doc" value="income"/> Income evidence</label>
+  <label><input type="checkbox" class="doc" value="benefit"/> Benefit award letter</label>
+  <label><input type="checkbox" class="doc" value="proxy"/> ECO‑Flex proxy evidence</label>
+  <label><input type="checkbox" class="doc" value="epc"/> EPC or SAP report</label>
+ </fieldset>
+ <fieldset>
+  <legend>Customer planning to get documents to us by</legend>
+  <input type="date" id="docsBy" />
+ </fieldset>
+</details>
+<!-- Stage 4 measures section -->
+<details id="measuresSection" class="hidden">
+ <summary>Stage 4 – Potential measures / customer interest</summary>
+ <fieldset>
+  <label><input type="checkbox" class="measure" value="loft"/> Loft insulation</label>
+  <label><input type="checkbox" class="measure" value="cwi"/> Cavity wall insulation</label>
+  <label><input type="checkbox" class="measure" value="pv"/> Solar PV</label>
+  <label><input type="checkbox" class="measure" value="controls"/> Heating controls</label>
+  <label><input type="checkbox" class="measure" value="vent"/> Ventilation upgrades</label>
+ </fieldset>
+</details>
+<!-- Actions -->
+<button id="calcBtn">Calculate outcome</button>
+<!-- Results -->
+<details open>
+ <summary>Outcome & CRM summary</summary>
+ <textarea id="result"></textarea>
+</details>
+<!-- Troubleshooting dump -->
+<details>
+ <summary>Debug dump</summary>
+ <textarea id="dump"></textarea>
+</details>
+<script>
+// IMD list (trimmed – assume array imdList exists)
+const imdList=["PL52LD","PL51EE","PL51TH","PL51BT","PL51QZ"]; // truncated for brevity
+function $(id){return document.getElementById(id)}
+// helpers
+function postcodeMatch(pc){return imdList.includes(pc.replace(/\s+/g,'').toUpperCase())}
+function anyChecked(cls){return [...document.querySelectorAll('.'+cls+':checked')].map(e=>e.value)}
+function showAdvanced(){$('advancedFin').classList.remove('hidden')}
+function hide(el){el.classList.add('hidden')}
+function show(el){el.classList.remove('hidden')}
+$('postcode').addEventListener('input',()=>{
+ const ok=postcodeMatch($('postcode').value);$('imdFlag').innerHTML='IMD eligibility: <strong>'+ (ok?'Yes':'No')+'</strong>';
+});
+$('upgraded').addEventListener('change',checkBorderline);
+$('sap').addEventListener('input',checkBorderline);
+function checkBorderline(){
+ const sap=parseInt($('sap').value||0);if(sap>=60&&sap<=68&&$('upgraded').checked){show($('deReviewWrap'))}else{hide($('deReviewWrap'))}}
+$('calcBtn').addEventListener('click',()=>{
+ // financial pathway checks
+ const postcodeOk=postcodeMatch($('postcode').value);
+ const benefitOk=anyChecked('benefit').length>0;
+ const gross=parseFloat($('gross').value||0);
+ const grossOk=(gross>0 && gross<=36000);
+ let pathway='',finElig=false;
+ if(postcodeOk){pathway='1 IMD';finElig=true}
+ else if(benefitOk){pathway='2 benefits';finElig=true}
+ else if(grossOk){pathway='3 gross';finElig=true}
+ else{showAdvanced();const net=parseFloat($('net').value||0),housing=parseFloat($('housing').value||0);const adults=parseInt($('adults').value),children=parseInt($('children').value);const scale=1+0.5*(adults-1)+0.3*children;const ahc=(net-housing)/scale;if(ahc>0&&ahc<14625){pathway='4 AHC';finElig=true}else{
+   const proxies=anyChecked('proxy');if(proxies.length>=2&&!((proxies.includes('5')||proxies.includes('6'))&&proxies.includes('7'))){pathway='5 ECO‑Flex';finElig=true}
+ }}
+ // property eligibility
+ const epc=$('epc').value;const sap=parseInt($('sap').value||0);let propElig=(['D','E','F','G'].includes(epc)&&sap<70);
+ // borderline DE review override
+ if($('deReview').value==='noNotEligible')propElig=false; if($('deReview').value==='yes')propElig=false;
+ // priority logic
+ const vulns=anyChecked('vuln').length;const cavity=$('cavity').checked; let outcome='Not eligible';
+ if(finElig&&propElig){if(cavity){if(vulns>=2){outcome='Year 1 Priority 1'}else if(vulns===1){outcome='Year 1 Priority 2'}else{outcome='Year 1 Priority 3'}}else{outcome='Year 2'} }
+ if($('deReview').value==='yes') outcome='Refer to DE';
+ // reveal docs & measures for P1/P2
+ if(outcome==='Year 1 Priority 1'||outcome==='Year 1 Priority 2'){show($('docsSection'));show($('measuresSection'))}else{hide($('docsSection'));hide($('measuresSection'))}
+ // result text
+ $('result').value=`Outcome: ${outcome}\nFinancial pathway: ${pathway}\nTenure: ${$('tenure').value}\nDocs by: ${$('docsBy').value||'N/A'}`;
+ // dump
+ const dump={consent:[$('consentGen').checked,$('consentHealth').checked,$('consentShare').checked],call:$('callTime').value,attempt:$('attempt').value,postcode:$('postcode').value,benefits:anyChecked('benefit'),gross:$('gross').value,net:$('net').value,housing:$('housing').value,proxies:anyChecked('proxy'),vulns:anyChecked('vuln'),docs:anyChecked('doc'),measures:anyChecked('measure')};
+ $('dump').value=JSON.stringify(dump,null,2);
+});
+</script>
+</body>
+</html>
