@@ -122,6 +122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const reasonStr = reason ? `\nReason: ${reason}` : "";
       $("result").value = `Outcome: ${outcome}${reasonStr}\nFinancial pathway: ${pathway}\nPossible pathways: ${possible.join(', ')}\nTenure: ${$("tenure").value}\nDocs by: ${$("docsBy").value || 'N/A'}`;
       const dump = {
+        projectName: $("projectName").value,
         consent: [$("consentGen").checked, $("consentHealth").checked, $("consentShare").checked],
         call: $("callTime").value,
         attempt: $("attempt").value,
