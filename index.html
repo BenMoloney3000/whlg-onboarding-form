@@ -9,8 +9,8 @@
 <body>
 <h1>WHLG Triage Calculator (v2.4)</h1>
 <!-- Stage 1 -->
-<details open>
- <summary>Stage 1 – Background, GDPR & call info</summary>
+<section>
+ <h2>Stage 1 – Background, GDPR & call info</h2>
  <fieldset>
   <label><input type="checkbox" id="consentGen"/> Caller has read PEC privacy notice</label>
   <label><input type="checkbox" id="consentHealth"/> Caller consents to discuss health data</label>
@@ -20,10 +20,10 @@
    <select id="attempt"><option>1</option><option>2</option><option>3</option></select>
   </label>
  </fieldset>
-</details>
+</section>
 <!-- Stage 2 -->
-<details>
- <summary>Stage 2 – Eligibility & priority checks</summary>
+<section>
+ <h2>Stage 2 – Eligibility & priority checks</h2>
  <!-- Tenure -->
  <fieldset>
   <legend>Tenure</legend>
@@ -39,10 +39,8 @@
  <!-- EPC / SAP -->
  <fieldset>
   <legend>Property EPC / SAP</legend>
-  <label>Postcode <input type="text" id="postcode" placeholder="e.g. PL5 2LD" /></label>
-  <p id="imdFlag">IMD eligibility: <strong>Unknown</strong></p>
-  <p id="imdDecile"></p>
-  <p id="imdIncomeDecile"></p>
+   <label>Postcode <input type="text" id="postcode" placeholder="e.g. PL5 2LD" /></label>
+   <p id="imdFlag">IMD eligibility: <strong>Unknown</strong></p>
   <label>EPC rating
    <select id="epc">
     <option value="">Select…</option><option>D</option><option>E</option><option>F</option><option>G</option><option value="Cplus">C‑or‑better</option>
@@ -62,8 +60,8 @@
   </div>
  </fieldset>
  <!-- Vulnerabilities -->
- <details>
-  <summary>Vulnerabilities (tick all that apply)</summary>
+ <section>
+  <h2>Vulnerabilities (tick all that apply)</h2>
   <fieldset>
    <label><input type="checkbox" class="vuln" value="65+"/> 65 or older</label>
    <label><input type="checkbox" class="vuln" value="resp"/> Respiratory / CVD</label>
@@ -74,16 +72,16 @@
    <label><input type="checkbox" class="vuln" value="child"/> Child under 5</label>
    <label><input type="checkbox" class="vuln" value="other"/> Other vulnerability to cold</label>
   </fieldset>
- </details>
+ </section>
  <!-- Financial eligibility -->
  <fieldset>
   <legend>Financial eligibility – cascaded routes</legend>
-  <details>
-   <summary>Pathway 1 – IMD Income Decile 1‑2 postcode</summary>
+  <section>
+   <h2>Pathway 1 – IMD Income Decile 1‑2 postcode</h2>
    <p>This is checked automatically from the postcode.</p>
-  </details>
-  <details>
-   <summary>Pathway 2 – Means‑tested benefits</summary>
+  </section>
+  <section>
+   <h2>Pathway 2 – Means‑tested benefits</h2>
    <label><input type="checkbox" class="benefit" value="HB"/> Housing Benefit</label>
    <label><input type="checkbox" class="benefit" value="JSA"/> Income‑based JSA</label>
    <label><input type="checkbox" class="benefit" value="ESA"/> Income‑related ESA</label>
@@ -91,9 +89,9 @@
    <label><input type="checkbox" class="benefit" value="PC"/> Pension Credit (G/S)</label>
    <label><input type="checkbox" class="benefit" value="UC"/> Universal Credit</label>
    <label><input type="checkbox" class="benefit" value="TC"/> Working / Child Tax Credit</label>
-  </details>
-  <details class="advFin hidden">
-   <summary>Pathway 2 – ECO Flex Route 2</summary>
+  </section>
+  <section class="advFin hidden">
+   <h2>Pathway 2 – ECO Flex Route 2</h2>
    <label><input type="checkbox" class="proxy" value="1"/> IMD (overall IMD - see above) 1‑3</label>
    <label><input type="checkbox" class="proxy" value="2"/> Council‑Tax Reduction</label>
    <label><input type="checkbox" class="proxy" value="3"/> NICE NG6 vulnerability</label>
@@ -101,25 +99,27 @@
    <label><input type="checkbox" class="proxy" value="5"/> LA low‑income scheme</label>
    <label><input type="checkbox" class="proxy" value="6"/> CA / supplier referral</label>
    <label><input type="checkbox" class="proxy" value="7"/> Supplier debt data</label>
-  </details>
-  <details>
-   <summary>Pathway 3 – Income &lt; £36&nbsp;000</summary>
+  </section>
+  <section>
+   <h2>Pathway 3 – Income &lt; £36&nbsp;000</h2>
    <label>Total gross household income (£) <input type="number" id="gross"/></label>
-  </details>
-  <details class="advFin hidden">
-   <summary>Pathway 3 – AHC Equalisation</summary>
+  </section>
+  <section class="advFin hidden">
+   <h2>Pathway 3 – AHC Equalisation</h2>
    <label>Net income (£) <input type="number" id="net"/></label>
    <label>Annual housing costs (£) <input type="number" id="housing"/></label>
    <label>Adults in household <input type="number" id="adults" min="1" value="1"/></label>
    <label>Children in household <input type="number" id="children" min="0" value="0"/></label>
-  </details>
+  </section>
  </fieldset>
+
 </details>
 <!-- Actions -->
 <button id="calcBtn">Calculate outcome</button>
+
 <!-- Stage 3 docs -->
-<details id="docsSection" class="hidden">
- <summary>Stage 3 – Documents the customer will send</summary>
+<section id="docsSection" class="hidden">
+ <h2>Stage 3 – Documents the customer will send</h2>
  <fieldset>
   <legend>Proof of address document customer will send</legend>
   <label><input type="checkbox" class="doc" value="utility"/> Recent utility bill</label>
@@ -141,10 +141,10 @@
   <legend>Customer planning to get documents to us by</legend>
   <input type="date" id="docsBy" />
  </fieldset>
-</details>
+</section>
 <!-- Stage 4 measures section -->
-<details id="measuresSection" class="hidden">
- <summary>Stage 4 – Potential measures / customer interest</summary>
+<section id="measuresSection" class="hidden">
+ <h2>Stage 4 – Potential measures / customer interest</h2>
  <fieldset>
   <label><input type="checkbox" class="measure" value="loft"/> Loft insulation</label>
   <label><input type="checkbox" class="measure" value="cwi"/> Cavity wall insulation</label>
@@ -152,17 +152,19 @@
   <label><input type="checkbox" class="measure" value="controls"/> Heating controls</label>
   <label><input type="checkbox" class="measure" value="vent"/> Ventilation upgrades</label>
  </fieldset>
+
  </details>
+
 <!-- Results -->
-<details open>
- <summary>Outcome & CRM summary</summary>
+<section>
+ <h2>Outcome & CRM summary</h2>
  <textarea id="result"></textarea>
-</details>
+</section>
 <!-- Troubleshooting dump -->
-<details>
- <summary>Debug dump</summary>
+<section>
+ <h2>Debug dump</h2>
  <textarea id="dump"></textarea>
-</details>
+</section>
 <script src="script.js"></script>
 </body>
 </html>
