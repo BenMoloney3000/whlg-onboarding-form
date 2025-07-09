@@ -1,8 +1,31 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const $ = id => document.getElementById(id);
-  const imdList = ["PL52LD","PL51EE","PL51TH","PL51BT","PL51QZ"]; // truncated
+  const imdSet = new Set();
+  const deciles = new Map();
+
+  async function loadData() {
+    const [imdText, decText] = await Promise.all([
+      fetch('data/DESNZ - eligible post codes - IMD 1-2 postcodes.csv').then(r => r.text()),
+      fetch('data/2019-deprivation-by-postcode_PLYMOUTH.csv').then(r => r.text())
+    ]);
+    imdText.split(/\r?\n/).slice(1).forEach(line => {
+      const pc = line.trim();
+      if (pc) imdSet.add(pc.replace(/\s+/g, '').toUpperCase());
+    });
+    decText.split(/\r?\n/).slice(1).forEach(line => {
+      if (!line.trim()) return;
+      const [pc, imdDecile, incomeDecile] = line.split(',');
+      if (pc) deciles.set(pc.replace(/\s+/g, '').toUpperCase(),
+        { imdDecile, incomeDecile });
+    });
+  }
+
+  await loadData();
   const triage = {
-    postcodeMatch(pc) { return imdList.includes(pc.replace(/\s+/g,'').toUpperCase()); },
+    postcodeMatch(pc) { return imdSet.has(pc.replace(/\s+/g,'').toUpperCase()); },
+    getDeciles(pc) {
+      return deciles.get(pc.replace(/\s+/g,'').toUpperCase()) || null;
+    },
     anyChecked(cls) { return [...document.querySelectorAll('.'+cls+':checked')].map(e => e.value); },
     show(el) { el.classList.remove('hidden'); },
     hide(el) { el.classList.add('hidden'); },
@@ -83,8 +106,12 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     bindEvents() {
       $("postcode").addEventListener('input', () => {
-        const ok = this.postcodeMatch($("postcode").value);
+        const value = $("postcode").value;
+        const ok = this.postcodeMatch(value);
         $("imdFlag").innerHTML = 'IMD eligibility: <strong>' + (ok ? 'Yes' : 'No') + '</strong>';
+        const dec = this.getDeciles(value);
+        $("imdDecile").textContent = dec ? 'IMD Decile: ' + dec.imdDecile : '';
+        $("imdIncomeDecile").textContent = dec ? 'IMD Income Decile: ' + dec.incomeDecile : '';
       });
       $("upgraded").addEventListener('change', () => this.checkBorderline());
       $("sap").addEventListener('input', () => this.checkBorderline());
