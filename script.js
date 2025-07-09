@@ -92,6 +92,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       }
       if ($("deReview").value === "yes") outcome = "Refer to DE";
+      let reason = "";
+      if (outcome === "Not eligible") {
+        if (!finElig) {
+          reason = "No eligible financial pathway";
+        } else if (!propElig) {
+          if ($("deReview").value === "noNotEligible") {
+            reason = "DE review: property ineligible";
+          } else {
+            const epcVal = $("epc").value;
+            const sapVal = parseInt($("sap").value || 0);
+            if (!["D", "E", "F", "G"].includes(epcVal)) {
+              reason = "EPC rating must be D to G";
+            } else if (sapVal >= 70) {
+              reason = "SAP score must be below 70";
+            } else {
+              reason = "Property not eligible";
+            }
+          }
+        }
+      }
       if (outcome === "Year 1 Priority 1" || outcome === "Year 1 Priority 2") {
         this.show($("docsSection"));
         this.show($("measuresSection"));
@@ -99,7 +119,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         this.hide($("docsSection"));
         this.hide($("measuresSection"));
       }
-      $("result").value = `Outcome: ${outcome}\nFinancial pathway: ${pathway}\nPossible pathways: ${possible.join(', ')}\nTenure: ${$("tenure").value}\nDocs by: ${$("docsBy").value || 'N/A'}`;
+      const reasonStr = reason ? `\nReason: ${reason}` : "";
+      $("result").value = `Outcome: ${outcome}${reasonStr}\nFinancial pathway: ${pathway}\nPossible pathways: ${possible.join(', ')}\nTenure: ${$("tenure").value}\nDocs by: ${$("docsBy").value || 'N/A'}`;
       const dump = {
         consent: [$("consentGen").checked, $("consentHealth").checked, $("consentShare").checked],
         call: $("callTime").value,
