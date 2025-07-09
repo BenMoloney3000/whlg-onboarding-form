@@ -141,14 +141,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       $("postcode").addEventListener('input', () => {
         const value = $("postcode").value;
         const ok = this.postcodeMatch(value);
-        $("imdFlag").innerHTML = 'IMD eligibility: <strong>' + (ok ? 'Yes' : 'No') + '</strong>';
         const dec = this.getDeciles(value);
-        $("imdDecile").textContent = dec
-          ? 'Overall IMD decile: ' + dec.imdDecile
-          : '';
-        $("imdIncomeDecile").textContent = dec
-          ? 'Income IMD decile: ' + dec.incomeDecile
-          : '';
+        $("imdFlag").innerHTML =
+          'IMD eligibility: <strong>' + (ok ? 'Yes' : 'No') + '</strong>' +
+          (dec
+            ? '<br>Overall IMD decile: ' + dec.imdDecile +
+              '<br>Income IMD decile: ' + dec.incomeDecile
+            : '');
         if (dec && parseInt(dec.imdDecile, 10) >= 1 && parseInt(dec.imdDecile, 10) <= 3) {
           imdProxy.checked = true;
         } else {
