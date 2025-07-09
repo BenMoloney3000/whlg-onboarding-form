@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const $ = id => document.getElementById(id);
   const imdSet = new Set();
   const deciles = new Map();
+  const imdProxy = document.querySelector('.proxy[value="1"]');
 
   async function loadData() {
     const [imdText, decText] = await Promise.all([
@@ -127,6 +128,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         $("imdIncomeDecile").textContent = dec
           ? 'Income IMD decile: ' + dec.incomeDecile
           : '';
+        if (dec && parseInt(dec.imdDecile, 10) >= 1 && parseInt(dec.imdDecile, 10) <= 3) {
+          imdProxy.checked = true;
+        } else {
+          imdProxy.checked = false;
+        }
       });
       $("upgraded").addEventListener('change', () => this.checkBorderline());
       $("sap").addEventListener('input', () => this.checkBorderline());
