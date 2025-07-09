@@ -29,7 +29,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     anyChecked(cls) { return [...document.querySelectorAll('.'+cls+':checked')].map(e => e.value); },
     show(el) { el.classList.remove('hidden'); },
     hide(el) { el.classList.add('hidden'); },
-    showAdvanced() { this.show($("advancedFin")); },
+    showAdvanced() {
+      document.querySelectorAll('.advFin').forEach(el => this.show(el));
+    },
     checkBorderline() {
       const sap = parseInt($("sap").value || 0);
       if (sap >= 60 && sap <= 68 && $("upgraded").checked) {
@@ -41,26 +43,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     calculate() {
       const postcodeOk = this.postcodeMatch($("postcode").value);
       const benefitOk = this.anyChecked("benefit").length > 0;
+      const proxies = this.anyChecked("proxy");
       const gross = parseFloat($("gross").value || 0);
       const grossOk = gross > 0 && gross <= 36000;
       let pathway = "", finElig = false;
-      if (postcodeOk) { pathway = "1 IMD"; finElig = true; }
-      else if (benefitOk) { pathway = "2 benefits"; finElig = true; }
-      else if (grossOk) { pathway = "3 gross"; finElig = true; }
-      else {
+      if (postcodeOk) {
+        pathway = "1 IMD"; finElig = true;
+      } else if (benefitOk) {
+        pathway = "2 benefits"; finElig = true;
+      } else {
         this.showAdvanced();
-        const net = parseFloat($("net").value || 0);
-        const housing = parseFloat($("housing").value || 0);
-        const adults = parseInt($("adults").value);
-        const children = parseInt($("children").value);
-        const scale = 1 + 0.5 * (adults - 1) + 0.3 * children;
-        const ahc = (net - housing) / scale;
-        if (ahc > 0 && ahc < 14625) {
-          pathway = "4 AHC"; finElig = true;
+        if (proxies.length >= 2 && !((proxies.includes('5') || proxies.includes('6')) && proxies.includes('7'))) {
+          pathway = "2 ECO Flex"; finElig = true;
+        } else if (grossOk) {
+          pathway = "3 income"; finElig = true;
         } else {
-          const proxies = this.anyChecked("proxy");
-          if (proxies.length >= 2 && !((proxies.includes('5') || proxies.includes('6')) && proxies.includes('7'))) {
-            pathway = "5 ECO‑Flex"; finElig = true;
+          const net = parseFloat($("net").value || 0);
+          const housing = parseFloat($("housing").value || 0);
+          const adults = parseInt($("adults").value);
+          const children = parseInt($("children").value);
+          const scale = 1 + 0.5 * (adults - 1) + 0.3 * children;
+          const ahc = (net - housing) / scale;
+          if (ahc > 0 && ahc < 14625) {
+            pathway = "3 AHC"; finElig = true;
           }
         }
       }

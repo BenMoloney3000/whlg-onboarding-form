@@ -78,6 +78,13 @@
  <!-- Financial eligibility -->
  <fieldset>
   <legend>Financial eligibility – cascaded routes</legend>
+  <ul>
+   <li>Pathway 1 – IMD 1‑2 postcode</li>
+   <li>Pathway 2 – Means‑tested benefits</li>
+   <li>Pathway 2 – ECO Flex Route 2</li>
+   <li>Pathway 3 – Income &lt; £36&nbsp;000</li>
+   <li>Pathway 3 – AHC Equalisation</li>
+  </ul>
   <!-- Pathway 1 IMD handled automatically -->
   <!-- Pathway 2 Means‑tested benefits -->
   <details>
@@ -90,31 +97,30 @@
    <label><input type="checkbox" class="benefit" value="UC"/> Universal Credit</label>
    <label><input type="checkbox" class="benefit" value="TC"/> Working / Child Tax Credit</label>
   </details>
-  <!-- Pathway 3 Gross income -->
+  <!-- Pathway 2 ECO Flex Route 2 -->
+  <details class="advFin hidden">
+   <summary>Pathway 2 – ECO Flex Route 2</summary>
+   <label><input type="checkbox" class="proxy" value="1"/> LSOA 1‑3</label>
+   <label><input type="checkbox" class="proxy" value="2"/> Council‑Tax Reduction</label>
+   <label><input type="checkbox" class="proxy" value="3"/> NICE NG6 vulnerability</label>
+   <label><input type="checkbox" class="proxy" value="4"/> Free School Meals</label>
+   <label><input type="checkbox" class="proxy" value="5"/> LA low‑income scheme</label>
+   <label><input type="checkbox" class="proxy" value="6"/> CA / supplier referral</label>
+   <label><input type="checkbox" class="proxy" value="7"/> Supplier debt data</label>
+  </details>
+  <!-- Pathway 3 Income threshold -->
   <details>
-   <summary>Pathway 3 – Gross income ≤ £36 000</summary>
+   <summary>Pathway 3 – Income &lt; £36&nbsp;000</summary>
    <label>Total gross household income (£) <input type="number" id="gross"/></label>
   </details>
-  <!-- Advanced routes hidden initially -->
-  <div id="advancedFin" class="hidden">
-   <details>
-    <summary>Pathway 4 – After‑housing‑cost equivalised</summary>
-    <label>Net income (£) <input type="number" id="net"/></label>
-    <label>Annual housing costs (£) <input type="number" id="housing"/></label>
-    <label>Adults in household <input type="number" id="adults" min="1" value="1"/></label>
-    <label>Children in household <input type="number" id="children" min="0" value="0"/></label>
-   </details>
-   <details>
-    <summary>Pathway 5 – ECO‑Flex two‑proxy</summary>
-    <label><input type="checkbox" class="proxy" value="1"/> LSOA 1‑3</label>
-    <label><input type="checkbox" class="proxy" value="2"/> Council‑Tax Reduction</label>
-    <label><input type="checkbox" class="proxy" value="3"/> NICE NG6 vulnerability</label>
-    <label><input type="checkbox" class="proxy" value="4"/> Free School Meals</label>
-    <label><input type="checkbox" class="proxy" value="5"/> LA low‑income scheme</label>
-    <label><input type="checkbox" class="proxy" value="6"/> CA / supplier referral</label>
-    <label><input type="checkbox" class="proxy" value="7"/> Supplier debt data</label>
-   </details>
-  </div>
+  <!-- Pathway 3 AHC Equalisation -->
+  <details class="advFin hidden">
+   <summary>Pathway 3 – AHC Equalisation</summary>
+   <label>Net income (£) <input type="number" id="net"/></label>
+   <label>Annual housing costs (£) <input type="number" id="housing"/></label>
+   <label>Adults in household <input type="number" id="adults" min="1" value="1"/></label>
+   <label>Children in household <input type="number" id="children" min="0" value="0"/></label>
+  </details>
  </fieldset>
 </details>
 <!-- Stage 3 docs -->
