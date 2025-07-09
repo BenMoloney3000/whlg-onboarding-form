@@ -125,6 +125,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         consent: [$("consentGen").checked, $("consentHealth").checked, $("consentShare").checked],
         call: $("callTime").value,
         attempt: $("attempt").value,
+        whyContact: $("whyContact").value,
+        heardVia: $("heardVia").value,
         postcode: $("postcode").value,
         benefits: this.anyChecked("benefit"),
         gross: $("gross").value,
