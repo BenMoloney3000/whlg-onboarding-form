@@ -6,6 +6,7 @@ This project provides a static triage calculator used for WHLG onboarding. The c
 
 - `index.html` – main HTML markup linking to external CSS and JavaScript
 - `style.css` – standalone stylesheet
-- `script.js` – JavaScript containing form logic
+- `script.js` – JavaScript containing form logic. The calculator now reports a
+  reason when the outcome is "Not eligible".
 
 To use, simply open `index.html` in a web browser or deploy the repository to GitHub Pages.
