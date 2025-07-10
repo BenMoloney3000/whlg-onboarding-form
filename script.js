@@ -33,6 +33,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     showAdvanced() {
       document.querySelectorAll('.advFin').forEach(el => this.show(el));
     },
+    // Determine eligibility for ECO Flex Route 2.
+    // A household must select at least two proxies and one of the
+    // selected pairs must appear in the approved list below.
+    flexEligible(proxies) {
+      if (proxies.length < 2) return false;
+      const validPairs = new Set([
+        '1-2','1-4','1-5','1-6','1-7',
+        '2-3','2-4','2-5','2-6','2-7',
+        '3-4','3-5','3-6','3-7',
+        '4-5','4-6','4-7',
+        '5-6'
+      ]);
+      const unique = [...new Set(proxies)];
+      for (let i = 0; i < unique.length; i++) {
+        for (let j = i + 1; j < unique.length; j++) {
+          const pair = `${unique[i]}-${unique[j]}`;
+          const rev = `${unique[j]}-${unique[i]}`;
+          if (validPairs.has(pair) || validPairs.has(rev)) return true;
+        }
+      }
+      return false;
+    },
     checkBorderline() {
       const sap = parseInt($("sap").value || 0);
       if (sap >= 60 && sap <= 68 && $("upgraded").checked) {
@@ -50,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const possible = [];
       if (postcodeOk) possible.push("Pathway 1 – IMD 1-2 postcode");
       if (benefitOk) possible.push("Pathway 2 – Means-tested benefits");
-      const flexOk = proxies.length >= 2 && !((proxies.includes('5') || proxies.includes('6')) && proxies.includes('7'));
+      const flexOk = this.flexEligible(proxies);
       if (flexOk) possible.push("Pathway 2 – ECO Flex Route 2");
       if (grossOk) possible.push("Pathway 3 – Income < £36,000");
       const net = parseFloat($("net").value || 0);
