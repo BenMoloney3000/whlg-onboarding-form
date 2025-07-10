@@ -59,7 +59,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       const children = parseInt($("children").value);
       const scale = 1 + 0.5 * (adults - 1) + 0.3 * children;
       const ahc = (net - housing) / scale;
-      const ahcOk = ahc > 0 && ahc < 14625;
+      const dependents = children;
+      let ahcMax = 14625;
+      if (adults >= 2) {
+        if (dependents === 1) ahcMax = 24000;
+        else if (dependents === 2) ahcMax = 28000;
+        else if (dependents === 3) ahcMax = 32000;
+        else if (dependents === 4) ahcMax = 36000;
+        else if (dependents >= 5) ahcMax = 40000;
+      } else if (adults === 1) {
+        if (dependents === 3) ahcMax = 23600;
+        else if (dependents === 4) ahcMax = 27600;
+        else if (dependents >= 5) ahcMax = 31600;
+      }
+      const ahcOk = ahc > 0 && ahc <= ahcMax;
       if (ahcOk) possible.push("Pathway 3 – AHC Equalisation");
       let pathway = "", finElig = false;
       if (postcodeOk) {
